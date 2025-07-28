@@ -33,12 +33,12 @@ class TaskService(
         return taskRepository.getAllTasks().map { it.toResponse() }
     }
 
-    fun deleteTask(id: String) {
-        return taskRepository.deleteTask(id)
+    fun deleteTask(id: String): TaskResponse? {
+        return taskRepository.deleteTask(id)?.toResponse()
     }
 
-    fun updateTask(id: String, taskRequest: TaskRequest): Boolean {
-        val existingTask =  taskRepository.getTask(id) ?: return false
+    fun updateTask(id: String, taskRequest: TaskRequest): TaskResponse? {
+        val existingTask =  taskRepository.getTask(id) ?: return null
         val updatedTask = existingTask.copy(
             title = taskRequest.title,
             description = taskRequest.description,
@@ -46,7 +46,7 @@ class TaskService(
             priority = taskRequest.priority,
         )
 
-        return taskRepository.updateTask(id, updatedTask)
+        return taskRepository.updateTask(id, updatedTask)?.toResponse()
     }
 
 

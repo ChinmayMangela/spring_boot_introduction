@@ -22,16 +22,17 @@ class TaskRepository {
         return tasks.values.toList();
     }
 
-    fun updateTask(id: String, task: Task): Boolean {
+    fun updateTask(id: String, task: Task): Task? {
         return if(tasks.keys.contains(id)) {
             tasks[id] = task
-            true
+            task
         } else {
-            false
+            null
         }
     }
 
-    fun deleteTask(id: String) {
-        tasks.remove(id)
+    fun deleteTask(id: String): Task? {
+        val deletedTask = tasks.remove(id)
+        return deletedTask
     }
 }
