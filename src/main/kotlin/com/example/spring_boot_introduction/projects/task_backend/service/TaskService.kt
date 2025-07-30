@@ -1,7 +1,8 @@
 package com.example.spring_boot_introduction.projects.task_backend.service
 
-import com.example.spring_boot_introduction.projects.task_backend.dto.TaskRequest
+import com.example.spring_boot_introduction.projects.task_backend.dto.CreateTaskRequest
 import com.example.spring_boot_introduction.projects.task_backend.dto.TaskResponse
+import com.example.spring_boot_introduction.projects.task_backend.dto.UpdateTaskRequest
 import com.example.spring_boot_introduction.projects.task_backend.model.Task
 import com.example.spring_boot_introduction.projects.task_backend.repository.TaskRepository
 import org.springframework.stereotype.Service
@@ -12,7 +13,7 @@ import java.util.UUID
 class TaskService(
     private val taskRepository: TaskRepository
 ) {
-    fun addTask(taskRequest: TaskRequest): TaskResponse {
+    fun addTask(taskRequest: CreateTaskRequest): TaskResponse {
         val task = Task(
             id = UUID.randomUUID().toString(),
             title = taskRequest.title,
@@ -37,13 +38,14 @@ class TaskService(
         return taskRepository.deleteTask(id)?.toResponse()
     }
 
-    fun updateTask(id: String, taskRequest: TaskRequest): TaskResponse? {
+    fun updateTask(id: String, newTask: UpdateTaskRequest): TaskResponse? {
         val existingTask =  taskRepository.getTask(id) ?: return null
         val updatedTask = existingTask.copy(
-            title = taskRequest.title,
-            description = taskRequest.description,
-            dueDate = taskRequest.dueDate,
-            priority = taskRequest.priority,
+            title = newTask.title,
+            description = newTask.description,
+            dueDate = newTask.dueDate,
+            priority = newTask.priority,
+            status = newTask.status
         )
 
         return taskRepository.updateTask(id, updatedTask)?.toResponse()

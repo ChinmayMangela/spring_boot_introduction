@@ -1,6 +1,7 @@
 package com.example.spring_boot_introduction.projects.task_backend.controller
-import com.example.spring_boot_introduction.projects.task_backend.dto.TaskRequest
+import com.example.spring_boot_introduction.projects.task_backend.dto.CreateTaskRequest
 import com.example.spring_boot_introduction.projects.task_backend.dto.TaskResponse
+import com.example.spring_boot_introduction.projects.task_backend.dto.UpdateTaskRequest
 import com.example.spring_boot_introduction.projects.task_backend.model.TaskPriority
 import com.example.spring_boot_introduction.projects.task_backend.service.TaskService
 import org.springframework.http.ResponseEntity
@@ -22,7 +23,7 @@ class TaskController(
 ) {
     @PostMapping
     fun addTask(
-        @RequestBody taskRequest: TaskRequest,
+        @RequestBody taskRequest: CreateTaskRequest,
     ): ResponseEntity<TaskResponse> {
         val task = taskService.addTask(taskRequest)
         return ResponseEntity.ok(task)
@@ -57,7 +58,7 @@ class TaskController(
     @PutMapping("/{id}")
     fun updateTask(
         @PathVariable("id") id: String,
-        @RequestBody task: TaskRequest,
+        @RequestBody task: UpdateTaskRequest,
     ): ResponseEntity<TaskResponse> {
         val task = taskService.updateTask(id, task)
         return if (task != null) {
