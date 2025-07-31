@@ -2,6 +2,7 @@ package com.example.spring_boot_introduction.projects.task_backend.controller
 import com.example.spring_boot_introduction.projects.task_backend.dto.CreateTaskRequest
 import com.example.spring_boot_introduction.projects.task_backend.dto.TaskResponse
 import com.example.spring_boot_introduction.projects.task_backend.dto.UpdateTaskRequest
+import com.example.spring_boot_introduction.projects.task_backend.exceptions.TaskNotFoundException
 import com.example.spring_boot_introduction.projects.task_backend.model.TaskPriority
 import com.example.spring_boot_introduction.projects.task_backend.service.TaskService
 import org.springframework.http.ResponseEntity
@@ -64,7 +65,7 @@ class TaskController(
         return if (task != null) {
             ResponseEntity.ok(task)
         } else {
-            ResponseEntity.notFound().build()
+            throw TaskNotFoundException(id)
         }
     }
 
@@ -76,7 +77,7 @@ class TaskController(
         return if (deletedTask != null) {
             ResponseEntity.ok(deletedTask)
         } else {
-            ResponseEntity.notFound().build()
+            throw TaskNotFoundException(id)
         }
     }
 }
