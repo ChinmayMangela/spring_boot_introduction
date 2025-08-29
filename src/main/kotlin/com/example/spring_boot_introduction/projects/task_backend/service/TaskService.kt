@@ -41,11 +41,11 @@ class TaskService(
     fun updateTask(id: String, newTask: UpdateTaskRequest): TaskResponse? {
         val existingTask =  taskRepository.getTask(id) ?: return null
         val updatedTask = existingTask.copy(
-            title = newTask.title,
-            description = newTask.description,
-            dueDate = newTask.dueDate,
-            priority = newTask.priority,
-            status = newTask.status
+            title = newTask.title ?: existingTask.title,
+            description = newTask.description ?: existingTask.description,
+            dueDate = newTask.dueDate ?: existingTask.dueDate,
+            priority = newTask.priority ?: existingTask.priority,
+            status = newTask.status ?: existingTask.status
         )
 
         return taskRepository.updateTask(id, updatedTask)?.toResponse()

@@ -5,6 +5,7 @@ import com.example.spring_boot_introduction.projects.task_backend.dto.UpdateTask
 import com.example.spring_boot_introduction.projects.task_backend.exceptions.TaskNotFoundException
 import com.example.spring_boot_introduction.projects.task_backend.model.TaskPriority
 import com.example.spring_boot_introduction.projects.task_backend.service.TaskService
+import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -24,7 +25,7 @@ class TaskController(
 ) {
     @PostMapping
     fun addTask(
-        @RequestBody taskRequest: CreateTaskRequest,
+        @Valid @RequestBody taskRequest: CreateTaskRequest,
     ): ResponseEntity<TaskResponse> {
         val task = taskService.addTask(taskRequest)
         return ResponseEntity.ok(task)
@@ -59,7 +60,7 @@ class TaskController(
     @PutMapping("/{id}")
     fun updateTask(
         @PathVariable("id") id: String,
-        @RequestBody task: UpdateTaskRequest,
+        @Valid @RequestBody task: UpdateTaskRequest,
     ): ResponseEntity<TaskResponse> {
         val task = taskService.updateTask(id, task)
         return if (task != null) {
