@@ -17,5 +17,5 @@ data class CreateTaskRequest(
     )
     val description: String,
     val dueDate: Instant,
-    val priority: TaskPriority
+    val priority: TaskPriority,
 )

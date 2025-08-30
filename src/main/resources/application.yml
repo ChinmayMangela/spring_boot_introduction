@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: spring_boot_introduction
+  datasource:
+    url: "jdbc:postgresql://db.yifuankjmxqbrodnsabb.supabase.co:5432/postgres\"
+    username: "postgres"
+    password: ${POSTGRES_PASSWORD}
+
+server:
+  port: 8085
+

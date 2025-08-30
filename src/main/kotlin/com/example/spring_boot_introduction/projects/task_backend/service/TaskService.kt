@@ -3,6 +3,10 @@ package com.example.spring_boot_introduction.projects.task_backend.service
 import com.example.spring_boot_introduction.projects.task_backend.dto.CreateTaskRequest
 import com.example.spring_boot_introduction.projects.task_backend.dto.TaskResponse
 import com.example.spring_boot_introduction.projects.task_backend.dto.UpdateTaskRequest
+import com.example.spring_boot_introduction.projects.task_backend.entity.TaskEntity
+import com.example.spring_boot_introduction.projects.task_backend.exceptions.TaskNotFoundException
+import com.example.spring_boot_introduction.projects.task_backend.mappers.toEntity
+import com.example.spring_boot_introduction.projects.task_backend.mappers.toResponse
 import com.example.spring_boot_introduction.projects.task_backend.model.Task
 import com.example.spring_boot_introduction.projects.task_backend.repository.TaskRepository
 import org.springframework.stereotype.Service
@@ -13,54 +17,57 @@ import java.util.UUID
 class TaskService(
     private val taskRepository: TaskRepository
 ) {
-    fun addTask(taskRequest: CreateTaskRequest): TaskResponse {
-        val task = Task(
-            id = UUID.randomUUID().toString(),
-            title = taskRequest.title,
-            description = taskRequest.description,
-            createdAt = Instant.now(),
-            dueDate = taskRequest.dueDate,
-            priority = taskRequest.priority
+
+    fun addTask(task: CreateTaskRequest): TaskResponse {
+        val task = taskRepository.save(
+            task.toEntity()
         )
-        taskRepository.addTask(task)
         return task.toResponse()
     }
 
-    fun getTask(id: String): TaskResponse? {
-        return taskRepository.getTask(id)?.toResponse()
+
+    fun findTaskById(id: Long): TaskResponse {
+        val task = taskRepository.findById(id).orElseThrow {
+            TaskNotFoundException(id = id.toString())
+        }
+
+        return task.toResponse()
     }
 
-    fun getAllTasks(): List<TaskResponse> {
-        return taskRepository.getAllTasks().map { it.toResponse() }
+
+    fun findAllTask(): List<TaskResponse> {
+        return taskRepository.findAll().map {
+            it.toResponse()
+        }
     }
 
-    fun deleteTask(id: String): TaskResponse? {
-        return taskRepository.deleteTask(id)?.toResponse()
-    }
+    fun updateTask(id: Long, newTask: UpdateTaskRequest): TaskResponse {
+        val oldTask = taskRepository.findById(id).orElseThrow {
+            TaskNotFoundException(id.toString())
+        }
 
-    fun updateTask(id: String, newTask: UpdateTaskRequest): TaskResponse? {
-        val existingTask =  taskRepository.getTask(id) ?: return null
-        val updatedTask = existingTask.copy(
-            title = newTask.title ?: existingTask.title,
-            description = newTask.description ?: existingTask.description,
-            dueDate = newTask.dueDate ?: existingTask.dueDate,
-            priority = newTask.priority ?: existingTask.priority,
-            status = newTask.status ?: existingTask.status
+        val updatedTask = TaskEntity(
+            id = oldTask.id,
+            title = newTask.title ?: oldTask.title,
+            description = newTask.description ?: oldTask.description,
+            createdAt = oldTask.createdAt, // preserve original creation time
+            dueDate = newTask.dueDate ?: oldTask.dueDate,
+            status = newTask.status ?: oldTask.status,
+            priority = newTask.priority ?: oldTask.priority
         )
 
-        return taskRepository.updateTask(id, updatedTask)?.toResponse()
+        val savedTask = taskRepository.save(updatedTask)
+        return savedTask.toResponse()
+
     }
 
 
-    private fun Task.toResponse(): TaskResponse {
-        return TaskResponse(
-            id = this.id,
-            title = this.title,
-            description = this.description,
-            createdAt = this.createdAt,
-            dueDate = this.dueDate,
-            status = this.status,
-            priority = this.priority
-        )
+    fun deleteTask(id: Long): TaskResponse {
+        val task = taskRepository.findById(id).orElseThrow {
+            TaskNotFoundException(id.toString())
+        }
+
+        taskRepository.deleteById(id)
+        return task.toResponse()
     }
 }
